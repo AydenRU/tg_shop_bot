@@ -11,6 +11,7 @@ from aiogram.types import CallbackQuery
 
 from requests.Button import *
 
+
 router_main = Router()
 
 
@@ -39,9 +40,21 @@ async def help(callback: CallbackQuery):
     for i in answer:
         text += f'{i['nameproduct']}:   {i['quantity']}  {i['cost'] * int(i['quantity'])}    {i['cost']}\n'
 
+    if not text:
+        text = 'Ваша корзина пуста <3'
+
     await callback.message.edit_text(text=f'{text}', reply_markup=inline_basket_button)
 
 @router_main.callback_query(F.data == 'Product')
 async def catalog_product(callback: CallbackQuery):
+
     await callback.answer('')
-    await callback.message.edit_text(text=f'Завтра сделаю вывод продуктов', reply_markup=inline_product_button)
+    await callback.message.edit_text(text=f'Завтра сделаю вывод продуктов', reply_markup=await inline_product_button())
+
+@router_main.callback_query(F.data.startswith('product_'))
+async def info_product(callback: CallbackQuery):
+    id = callback.data[callback.data.find('_') + 1:]
+
+
+
+

@@ -12,11 +12,8 @@ async def check_user():
 async def new_user(id):
     """Добавление нового пользователя,
      если он уже существует то выдаст исключение"""
-    print(model.conf.pool)
+    # print(model.conf.pool)
     try:
-        if model.conf.pool is None:
-            raise RuntimeError("🔴 Database pool not initialized")
-
         async with model.conf.pool.acquire() as cursor:
             await cursor.execute("""INSERT INTO  users (id)
                                 VALUES ($1)
@@ -35,7 +32,17 @@ async def get_basket_db(id):
                                         JOIN products ON baskets.id_product = products.id
                                         WHERE users.id = $1;
                                         """, id)
-            print(type(answer[0]))
+            # print(type(answer[0]))
         return answer
+    except Exception as error:
+        print(error)
+
+async def get_list_products_db():
+    try:
+        async with model.conf.pool.acquire() as cursor:
+            answer = await cursor.fetch("""
+                                        SELECT id, nameproduct, cost FROM products
+                                        """)
+            return answer
     except Exception as error:
         print(error)
