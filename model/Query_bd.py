@@ -6,8 +6,17 @@ from asyncpg import Pool
 import model.conf
 
 
-async def check_user():
-    pass
+async def check_user(id) -> bool:
+    try:
+        async with model.conf.pool.acquire() as cursor:
+            answer = await cursor.fetch("""
+                                        SELECT status_accsess FROM users
+                                        WHERE users.id = $1
+                                        """, id)
+            return bool(answer)
+    except Exception as error:
+        print(error)
+
 
 async def new_user(id):
     """Добавление нового пользователя,
@@ -19,9 +28,10 @@ async def new_user(id):
                                 VALUES ($1)
                                 ON CONFLICT
                                 DO NOTHING""",
-                                id)
+                                 id)
     except Exception as error:
         print(error)
+
 
 async def get_basket_db(id):
     try:
@@ -36,6 +46,7 @@ async def get_basket_db(id):
         return answer
     except Exception as error:
         print(error)
+
 
 async def get_list_products_db():
     try:
