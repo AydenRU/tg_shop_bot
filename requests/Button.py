@@ -3,7 +3,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 from model.Query_bd import get_list_products_db
 
-__all__ = ['inline_main_button', 'inline_basket_button', 'inline_admin_main_button', 'inline_product_button', 'inline_admin_menu_button']
+__all__ = ['inline_main_button', 'inline_basket_button',
+           'inline_admin_main_button', 'inline_product_button',
+           'inline_admin_menu_button', 'inline_admin_add_product_button']
 
 # Главные кнопки доступные пользователю
 
@@ -40,3 +42,6 @@ inline_admin_menu_button = InlineKeyboardMarkup(
                      [InlineKeyboardButton(text='Список всех товаров', callback_data='Admin_edit_list_product')],
                      [InlineKeyboardButton(text='Назад', callback_data='start')]
                      ])
+inline_admin_add_product_button = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text="Назад", callback_data='Admin')]]
+)

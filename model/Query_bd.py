@@ -5,6 +5,7 @@ from asyncpg import Pool
 # from model.conf import pool
 import model.conf
 
+# Пользователь
 
 async def check_user(id) -> bool:
     try:
@@ -55,5 +56,22 @@ async def get_list_products_db():
                                         SELECT id, nameproduct, cost FROM products
                                         """)
             return answer
+    except Exception as error:
+        print(error)
+
+
+
+# Администратор
+
+
+async def admin_add_products_db(data):
+    try:
+
+        async with model.conf.pool.acquire() as cursor:
+            await cursor.execute("""
+                                INSERT INTO products (nameproduct, cost, quantity)
+                                VALUES ($1, $2, $3)
+                                """, data[0], data[1], int(data[2]))
+        print('Данные добавлены')
     except Exception as error:
         print(error)
