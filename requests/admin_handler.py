@@ -8,14 +8,18 @@ from aiogram.fsm.state import StatesGroup, State
 
 from aiogram.types import CallbackQuery, Message
 
-from model.Query_bd import admin_add_products_db
+from model.Query_bd import (admin_add_products_db, admin_get_list_products_db,
+                            get_id_product, admin_del_products_db)
 
-from requests.Button import *
+from requests.button import *
 
 class Add_product(StatesGroup):
     name = State()
     cost = State()
     quantity = State()
+
+class Del_product(StatesGroup):
+    name = State()
 
 router_admin = Router()
 
@@ -48,7 +52,7 @@ async def admin_add_product_threa(message: Message, state: FSMContext):
 @router_admin.message(Add_product.quantity)
 async def admin_add_product_final(message: Message, state: FSMContext):
     name = await state.get_data()
-    data = list(name.values()) + list(message.text)
+    data = list(name.values()) + [message.text]
     await message.answer(text=f'Имя:{name['name']}\nСтоимость: {name['cost']}\n'
                               f'Количество: {message.text}',
                         reply_markup=inline_admin_add_product_button)
@@ -56,15 +60,55 @@ async def admin_add_product_final(message: Message, state: FSMContext):
     await state.clear()
 
 @router_admin.callback_query(F.data == 'Admin_delete_product')
-async def admin_del_product(callback: CallbackQuery):
-    pass
+async def admin_list_del_product(callback: CallbackQuery, state: FSMContext):
+    data = await admin_get_list_products_db()
+
+    header = f"{'ID':<4}| {'name':<20}| {'quantity':<10}| {'cost':<10}| {'all_cost':<10}"
+    lines = [header, "-" * len(header)]  # Добавим линию под заголовком
+
+    # Формат каждой строки
+    for item in data:
+        all_cost = item['quantity'] * item['cost']
+        lines.append(
+            f"{item['id']:<4}| {item['nameproduct']:<20}| {item['quantity']:<10}| {item['cost']:<10}| {all_cost:<10}"
+        )
+
+    text_data = "\n".join(lines)
+    text_data += '\n\nВведите имя продукта, которое хотите удалить!!'
+    await callback.message.edit_text(text=text_data, reply_markup=inline_admin_back_admin)
+    await state.set_state(Del_product.name)
+
+@router_admin.message(Del_product.name)
+async def admin_del_product(message: Message, state: FSMContext):
+    name = str(message.text)
+    id = int(await get_id_product(name))
+    await admin_del_products_db(id)
+    await message.edit_text(text="Удаление произведено ", reply_markup=inline_admin_back_admin)
 
 @router_admin.callback_query(F.data == 'Admin_edit_list_product')
 async def admin_list_all_product(callback: CallbackQuery):
-    pass
+    data = await admin_get_list_products_db()
+    # text_data = ['ID  |       name        |   quantity    |   cost    |   all_cost\n']
+    # print(data)
+    # for i in data:
+    #     text_data.append(f'{i['id']} | {i['nameproduct']}    |{i['quantity']}    |{i['cost']}    | {i['quantity'] * i['cost']}\n')
+
+    header = f"{'ID':<4}| {'name':<20}| {'quantity':<10}| {'cost':<10}| {'all_cost':<10}"
+    lines = [header, "-" * len(header)]
+
+    # Формат каждой строки
+    for item in data:
+        all_cost = item['quantity'] * item['cost']
+        lines.append(
+            f"{item['id']:<4}| {item['nameproduct']:<20}| {item['quantity']:<10}| {item['cost']:<10}| {all_cost:<10}"
+        )
+
+    text_data = "\n".join(lines)
+    await callback.message.edit_text(text=text_data, reply_markup=inline_admin_back_admin)
+
+
 
 @router_admin.callback_query(F.data.startswith('Admin_edit_product'))
 async def admin_show_product_for_edit(callback: CallbackQuery):
     pass
 
-# admin_del_list_all_product

@@ -7,10 +7,11 @@ from aiogram.types import Message
 from aiogram.types import ReplyKeyboardRemove
 
 
-from model.Query_bd import new_user, get_basket_db, check_user
+from model.Query_bd import (new_user, get_basket_db, check_user,
+                            get_full_info_about_product_db, products_in_baskets_db)
 from aiogram.types import CallbackQuery
 
-from requests.Button import *
+from requests.button import *
 
 
 router_main = Router()
@@ -58,7 +59,7 @@ async def basket(callback: CallbackQuery):
     answer = await get_basket_db(callback.from_user.id)
     text = ""
     for i in answer:
-        text += f'{i['nameproduct']}:   {i['quantity']}  {i['cost'] * int(i['quantity'])}    {i['cost']}\n'
+        text += f'{i['nameproduct']}:   {i['quantity']}  {float(i['cost']) * int(i['quantity'])}    {i['cost']}\n'
 
     if not text:
         text = 'Ваша корзина пуста <3'
@@ -73,12 +74,26 @@ async def catalog_product(callback: CallbackQuery):
     await callback.answer('')
     await callback.message.edit_text(text=f'Завтра сделаю вывод продуктов', reply_markup=await inline_product_button())
 
+
 @router_main.callback_query(F.data.startswith('product_'))
 async def info_product(callback: CallbackQuery):
     """
     Обработчик подробной информации товара
     """
     id = callback.data[callback.data.find('_') + 1:]
+    # print(id)
+    data = await get_full_info_about_product_db(id)
+    await callback.message.edit_text(text=f'_______________{data['nameproduct']}_______________\n'
+                                          f'Количество: {data['quantity']}\n'
+                                          f'Цена:   {data['cost']}\n'
+                                          f'Описание:   {data['description']}', reply_markup=await inline_item_product_button(id))
+
+@router_main.callback_query(F.data.startswith('Add_bascet_'))
+async def add_product_in_basket(callback: CallbackQuery):
+    id_product = int(callback.data[callback.data.rfind('_') + 1:])
+    await products_in_baskets_db(callback.from_user.id, id_product)
+    await callback.answer('Товар добавлен в корзину')
+
 
 
 

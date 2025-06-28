@@ -3,7 +3,7 @@ import asyncio
 
 
 from model.connection_db import connection_bd, test_connection_bd
-from requests.handler import router_main
+from requests.corr_app import router_main
 from requests.admin_handler import router_admin
 import model.conf
 
