@@ -1,8 +1,9 @@
 from aiogram import Router
 import asyncio
 
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from aiogram import F
+from pydantic.v1.validators import callable_validator
 
 from requests.button import *
 
@@ -16,11 +17,13 @@ router_product = Router()
 async def info_product_shop(callback, id_product):
 
     data = await get_info_about_product_db(id_product)
+    # await callback.message.delete()
     await callback.message.edit_text(text=f'_______________{data['nameproduct']}_______________\n'
-                                          f'Количество: {data['quantity']}\n'
-                                          f'Цена:   {data['cost']}\n'
-                                          f'Описание:   {data['description']}',
-                                     reply_markup=await inline_item_product_button(id_product))
+                                      f'Количество: {data['quantity']}\n'
+                                      f'Цена:   {data['cost']}\n'
+                                      f'Описание:   {data['description']}',
+                                     reply_markup=await inline_item_product_button(id_product)
+                                  )
 
 @router_product.callback_query(F.data == 'Product')
 async def catalog_product(callback: CallbackQuery):
@@ -28,7 +31,8 @@ async def catalog_product(callback: CallbackQuery):
     Обработчик списка с доступными товарами
     """
     # await callback.answer('')
-    await callback.message.edit_text(text=f'Выберите интересуемый продукт.', reply_markup=await inline_product_button())
+    await callback.message.delete()
+    await callback.message.answer(text=f'Выберите интересуемый продукт.', reply_markup=await inline_product_button())
 
 
 @router_product.callback_query(F.data.startswith('product_'))

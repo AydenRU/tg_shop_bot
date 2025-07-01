@@ -2,7 +2,7 @@ from aiogram import Router
 from aiogram import F
 
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 
 from fsm_group import AddProduct, DelProduct
 
@@ -17,7 +17,8 @@ router_admin = Router()
 
 @router_admin.callback_query(F.data == 'Admin')
 async def admin_interface(callback: CallbackQuery):
-    await callback.message.edit_text(text=f'Приветствую администратор {callback.from_user.username}',
+    await callback.message.delete()
+    await callback.message.answer_photo(photo=FSInputFile("Data\\image\\admin.jpg"),text=f'Приветствую администратор {callback.from_user.username}',
                                      reply_markup=inline_admin_menu_button)
 
 
@@ -37,7 +38,8 @@ async def admin_list_all_product(callback: CallbackQuery, state: FSMContext):
         )
 
     text_data = "\n".join(lines)
-    await callback.message.edit_text(text=text_data, reply_markup=inline_admin_back_menu_edit_admin)
+    await callback.message.delete()
+    await callback.message.answer(text=text_data, reply_markup=inline_admin_back_menu_edit_admin)
 
 
 @router_admin.callback_query(F.data.startswith('Admin_edit_product'))

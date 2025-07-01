@@ -3,7 +3,8 @@ from aiogram import F
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, FSInputFile
+
 
 from model.status import CheckStatus
 
@@ -28,7 +29,9 @@ async def start(message: Message):
         keybord = inline_main_button
 
     await CheckStatus.check_user(message.from_user.id)
-    await message.answer(f'Привет твои данные {message.from_user.id}, а имя {message.from_user.username} {message.from_user.first_name}',
+    await message.answer_photo(
+        photo =FSInputFile('Data\\image\\main_page.jpg'),
+        caption= f'{message.from_user.first_name}. Добро пожаловать в магазин <3',
                         reply_markup=keybord )
 
 @router_main.callback_query(F.data == 'start')
@@ -44,11 +47,12 @@ async def back_to_start(callback: CallbackQuery, state: FSMContext):
     else:
         keybord = inline_main_button
 
-    await callback.message.edit_text(
-        f'Вы вернулись в главное меню.',
+    await callback.message.delete()
+    await callback.message.answer_photo(
+        photo=FSInputFile('Data\\image\\main_page.jpg'),
+        caption=f'Вы вернулись в главное меню.',
         reply_markup=keybord
     )
-    await callback.answer()
 
 
 

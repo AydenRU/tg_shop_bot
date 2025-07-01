@@ -57,8 +57,7 @@ inline_admin_main_button = InlineKeyboardMarkup(
     )
 
 
-# [InlineKeyboardButton(text='Добавить товар', callback_data='Add_new_or_else_product')
-# [InlineKeyboardButton(text='Удалить товар', callback_data='Admin_delete_product')],
+
 
 inline_admin_menu_button = InlineKeyboardMarkup(
     inline_keyboard=[
