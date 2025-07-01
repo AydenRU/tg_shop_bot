@@ -1,10 +1,6 @@
-import asyncpg
-
-from functools import wraps
-
 from Exception import Exception_c
 
-import model.conf
+import Data.conf
 
 
 # Пользователь
@@ -16,7 +12,7 @@ class Edit_users:
         """Добавление нового пользователя,
          если он уже существует то выдаст исключение"""
         # print(model.conf.pool)
-        async with model.conf.pool.acquire() as cursor:
+        async with Data.conf.pool.acquire() as cursor:
             await cursor.execute("""
                                 INSERT INTO  users (id)
                                 VALUES ($1)
@@ -26,7 +22,7 @@ class Edit_users:
 
 @Exception_c.check_exception
 async def products_in_baskets_db(id_user: int, id_product: int, quantity: int= 1):
-    async with model.conf.pool.acquire() as cursor:
+    async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
             await cursor.execute("""UPDATE products
                                 SET quantity = products.quantity - $2
@@ -46,7 +42,7 @@ async def products_in_baskets_db(id_user: int, id_product: int, quantity: int= 1
 
 @Exception_c.check_exception
 async def put_basket_in_products_db(id_user: int, id_product: int, quantity: int= 0):
-    async with model.conf.pool.acquire() as cursor:
+    async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
             await cursor.execute("""
                                 UPDATE baskets
@@ -67,7 +63,7 @@ async def put_basket_in_products_db(id_user: int, id_product: int, quantity: int
 
 @Exception_c.check_exception
 async def delete_basket_in_products_db(id_user: int, id_product: int, quantity: int):
-    async with model.conf.pool.acquire() as cursor:
+    async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
             await cursor.execute("""
                                 DELETE FROM baskets 
@@ -92,7 +88,7 @@ async def delete_basket_in_products_db(id_user: int, id_product: int, quantity: 
 
 @Exception_c.check_exception
 async def admin_add_products_db(data):
-    async with model.conf.pool.acquire() as cursor:
+    async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                             INSERT INTO products (nameproduct, cost, quantity)
                             VALUES ($1, $2, $3)
@@ -102,16 +98,17 @@ async def admin_add_products_db(data):
 
 @Exception_c.check_exception
 async def admin_get_list_products_db():
-    async with model.conf.pool.acquire() as cursor:
+    async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetch("""
                                     SELECT id, nameproduct, quantity, cost FROM products
                                     """)
         return answer
 
+
 @Exception_c.check_exception
 async def admin_del_products_db(id_product: int):
     try:
-        async with model.conf.pool.acquire() as cursor:
+        async with Data.conf.pool.acquire() as cursor:
             await cursor.execute("""
                                 DELETE FROM products
                                 WHERE products.id = $1

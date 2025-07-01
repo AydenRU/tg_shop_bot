@@ -1,13 +1,12 @@
 import asyncpg
-import asyncio
-import time
+import os
 
-import model.conf
-
+import Data.conf
 
 async def connection_bd():
-    model.conf.pool = await asyncpg.create_pool(host='localhost', database='AydenShopBot', password='postgres', user='postgres',
-                                     min_size=1, max_size=3)
+    Data.conf.pool = await asyncpg.create_pool(host=os.getenv("HOST"), database=os.getenv("DATABASE"),
+                                               password=os.getenv("PASSWORD"), user=os.getenv("USER"),
+                                               min_size=1, max_size=3)
     print('Подключение с БД произведено')
 
 

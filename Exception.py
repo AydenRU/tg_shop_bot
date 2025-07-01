@@ -8,7 +8,7 @@ class Exception_c:
             try:
                 result = await func(*args)
             except Exception as error:
-                print(error)
+                print(f"{func} {error}")
                 result = []
             return result if result else []
 
