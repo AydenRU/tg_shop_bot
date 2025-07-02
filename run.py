@@ -5,19 +5,21 @@ import os
 from dotenv import load_dotenv
 from model.connection_db import connection_bd, test_connection_bd
 
-from requests.pages.main import router_main
-from requests.pages.product import router_product
-from requests.pages.basket import  router_basket
+from request.pages.main import router_main
+from request.pages.product import router_product
+from request.pages.basket import  router_basket
 
-from requests.admin.admin_handler import router_admin
-from requests.admin.del_product import router_del_product_admin
-from requests.admin.add_product import router_add_new_product_admin
-from requests.admin.edit_product import router_edit_product_admin
+from request.admin.admin_handler import router_admin
+from request.admin.del_product import router_del_product_admin
+from request.admin.add_product import router_add_new_product_admin
+from request.admin.edit_product import router_edit_product_admin
 
-from requests.admin.edit.description import router_description_product
-from requests.admin.edit.delete import router_del_product
-from requests.admin.edit.cost import router_cost_product
-from requests.admin.edit.add import router_add_product
+from request.admin.edit.description import router_description_product
+from request.admin.edit.delete import router_del_product
+from request.admin.edit.cost import router_cost_product
+from request.admin.edit.add import router_add_product
+
+from pay.pay import router_pay
 
 import Data.conf
 
@@ -43,6 +45,7 @@ async def main():
     disp.include_router(router_del_product)
     disp.include_router(router_cost_product)
     disp.include_router(router_description_product)
+    disp.include_router(router_pay)
 
     await disp.start_polling(bot)
 

@@ -26,6 +26,20 @@ async def get_quantity_product_db(id_product: int):
                                        id_product)
         return answer
 
+
+@Exception_c.check_exception
+async def get_total_cost(id_users):
+    async with Data.conf.pool.acquire() as cursor:
+        total = await cursor.fetchval("""
+                                      SELECT SUM(baskets.quantity * products.cost) FROM baskets
+                                        JOIN products ON products.id = baskets.id_product
+                                        WHERE baskets.id_users = $1
+                                      """,
+                                      id_users)
+
+    return total
+
+
 @Exception_c.check_exception
 async def get_quantity_basket(id_product: int, id_user: int):
     """
