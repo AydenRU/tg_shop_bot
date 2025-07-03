@@ -107,5 +107,33 @@ async def get_info_about_product_db(id_product: int):
                                        id_product)
     return answer
 
+# Запросы платежей
 
+@Exception_c.check_exception
+async def get_status_payment(id_users: int) :
+    """
+    Возвращает status_payments, id_payments*
+    :param id_users:
+    :return:
+    """
+    async with Data.conf.pool.acquire() as cursor:
+        answer = await cursor.fetchrow("""
+                                        SELECT status_payments, id_payments, url_pay FROM history
+                                        WHERE history.id_users = $1
+                                        """,
+                                       id_users)
+    return answer
+
+
+@Exception_c.check_exception
+async def get_status_pending_payment(id_users: int):
+    async with Data.conf.pool.acquire() as cursor:
+        answer = await cursor.fetch("""
+                                        SELECT status_payments, id_payments, url_pay FROM history
+                                        WHERE history.id_users = $1 
+                                        AND history.status_payments = $2
+                                        """,
+                                       id_users, 'pending')
+
+    return answer
 

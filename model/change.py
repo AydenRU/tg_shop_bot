@@ -105,7 +105,7 @@ async def admin_get_list_products_db():
         return answer
 
 
-@Exception_c.check_exception
+
 async def admin_del_products_db(id_product: int):
     try:
         async with Data.conf.pool.acquire() as cursor:
@@ -117,3 +117,29 @@ async def admin_del_products_db(id_product: int):
     except Exception as error:
         print(error)
         return False
+
+
+# Запросы платежей
+
+@Exception_c.check_exception
+async def insert_info_payment(id_users: int, id_payment: str, status: str, url: str):
+    async with Data.conf.pool.acquire() as cursor:
+        await cursor.execute("""
+                             INSERT INTO history (id_users, id_payments, status_payments, url_pay)
+                                VALUES ($1,$2,$3,$4)
+                             """,
+                             id_users, id_payment, status, url)
+
+
+
+@Exception_c.check_exception
+async def update_status(id_user, id_payments, status):
+    async with Data.conf.pool.acquire() as cursor:
+        await cursor.execute("""
+                            UPDATE history SET status_payments = $3
+                                WHERE history.id_users = $1
+                                AND history.id_payments = $2
+                            """,
+                             id_user, id_payments, status)
+
+
