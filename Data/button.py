@@ -1,6 +1,7 @@
 from gc import callbacks
 
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import (InlineKeyboardMarkup, InlineKeyboardButton,
+                           ReplyKeyboardMarkup, KeyboardButton)
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 from model.select import get_list_products_db
@@ -11,7 +12,7 @@ __all__ = ['inline_main_button', 'inline_basket_button',
            'inline_admin_menu_button', 'inline_admin_add_product_button',
            'inline_admin_product_button', 'inline_admin_back_menu_edit_admin', 'inline_admin_product_button',
            'inline_admin_edit_product_admin', 'inline_admin_back_edit_product',
-           'inline_admin_back_product']
+           'inline_admin_back_product', 'PaymentButton', 'Orders']
 
 # Главные кнопки доступные пользователю
 
@@ -21,7 +22,7 @@ inline_main_button = InlineKeyboardMarkup(
 
 
 inline_basket_button = InlineKeyboardMarkup(
-    inline_keyboard=[[InlineKeyboardButton(text='Удалить', callback_data='Del_product_in_bascet')],
+    inline_keyboard=[[InlineKeyboardButton(text='Удалить', callback_data='Del_product_in_basket')],
                      [InlineKeyboardButton(text='Перейти к оплате', callback_data='pay_product_start')],
                      [InlineKeyboardButton(text='Назад', callback_data='start')]])
 
@@ -34,9 +35,9 @@ inline_product_button = InlineKeyboardMarkup(inline_keyboard=[
 
 
 
-async def inline_item_product_button(id):
+async def inline_item_product_button(id_product):
     inline_keyboard = InlineKeyboardBuilder()
-    inline_keyboard.add(InlineKeyboardButton(text='Добавить в корзину', callback_data=f'Add_bascet_{id}'))
+    inline_keyboard.add(InlineKeyboardButton(text='Добавить в корзину', callback_data=f'Add_bascet_{id_product}'))
     inline_keyboard.add(InlineKeyboardButton(text='Назад', callback_data='Product'))
     return inline_keyboard.adjust(1).as_markup()
 
@@ -64,6 +65,7 @@ inline_admin_main_button = InlineKeyboardMarkup(
 inline_admin_menu_button = InlineKeyboardMarkup(
     inline_keyboard=[
                      [InlineKeyboardButton(text='Список всех товаров', callback_data='Admin_edit_list_product')],
+                     [InlineKeyboardButton(text='Список заказов', callback_data='main_list_order')],
                      [InlineKeyboardButton(text='Назад', callback_data='start')]
                      ])
 
@@ -105,3 +107,52 @@ inline_admin_back_product = InlineKeyboardMarkup(inline_keyboard=[
 
 inline_admin_product_button = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Назад', callback_data='Admin')]])
+
+class PaymentButton:
+
+    @staticmethod
+    async def inline_back_button() -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='Назад', callback_data='pay_product_start')],
+            ])
+
+    @staticmethod
+    async def inline_to_go_payment():
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='Продолжить', callback_data='create_task_payment')],
+            [InlineKeyboardButton(text='Назад', callback_data='pay_product_start')],
+            ])
+
+
+    # @staticmethod
+    # async def inlane_error_back_in_menu_button():
+    #     return InlineKeyboardMarkup(inline_keyboard=[
+    #         [InlineKeyboardButton(text='назад')]
+    #     ])
+
+class Orders:
+
+    @staticmethod
+    async def inline_back_button() -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='Назад', callback_data='Admin')]
+        ])
+
+    @staticmethod
+    async def inline_main_select_orders() -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='Поднять уровень готовности',
+                                  callback_data='up_grayed_order')],
+            [InlineKeyboardButton(text='Назад',
+                                  callback_data='main_list_order')]
+        ])
+
+class GetData:
+
+    @staticmethod
+    def reply_take_phone():
+        return ReplyKeyboardMarkup(keyboard=[
+            [KeyboardButton(text='Предоставить номер телефона',
+                            request_contact=True)]
+        ])
+

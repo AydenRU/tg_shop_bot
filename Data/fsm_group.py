@@ -28,3 +28,12 @@ class EditCost(StatesGroup):
 
 class EditDescription(StatesGroup):
     description = State()
+
+class SelectUserOrder(StatesGroup):
+    id_user = State()
+
+class InputDataUsers(StatesGroup):
+    first_name = State()
+    last_name = State()
+    address = State()
+    contact_data = State()

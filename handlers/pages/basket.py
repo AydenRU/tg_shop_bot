@@ -12,6 +12,8 @@ from Data.fsm_group import DeleteProdictFromBasket
 
 from Data.button import *
 
+from utils.exceptions_dlia_my import ExceptionsCheck
+
 router_basket = Router()
 
 
@@ -69,7 +71,8 @@ async def basket(callback: CallbackQuery, state: FSMContext):
     await render_basket(callback.from_user.id, state, callback)
 
 
-@router_basket.callback_query(F.data.startswith('Del_product_in_bascet'))
+@router_basket.callback_query(F.data.startswith('Del_product_in_basket'))
+@ExceptionsCheck.check_payment_status_pending
 async def delete_basket_in_product(callback: CallbackQuery, state: FSMContext):
     text = (await state.get_data()).get('text')
 
@@ -100,6 +103,7 @@ async def delete_basket_in_product_quantity(message: Message, state: FSMContext)
 
 @router_basket.message(DeleteProdictFromBasket.quantity)
 async def delete_basket_in_product_final(message: Message, state: FSMContext):
+
     data = await state.get_data()
 
     if message.text.isdigit():

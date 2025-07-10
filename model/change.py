@@ -1,4 +1,4 @@
-from Exception import Exception_c
+from utils.exceptions_dlia_my import ExceptionsCheck
 
 import Data.conf
 
@@ -7,7 +7,7 @@ import Data.conf
 
 class Edit_users:
     @staticmethod
-    @Exception_c.check_exception
+    @ExceptionsCheck.check_exception
     async def new_user(id):
         """Добавление нового пользователя,
          если он уже существует то выдаст исключение"""
@@ -20,7 +20,7 @@ class Edit_users:
                                 """,
                                  id)
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def products_in_baskets_db(id_user: int, id_product: int, quantity: int= 1):
     async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
@@ -40,7 +40,7 @@ async def products_in_baskets_db(id_user: int, id_product: int, quantity: int= 1
                                  id_user, id_product, quantity)
             print(f'Товар {id_product} добавлен в корзину')
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def put_basket_in_products_db(id_user: int, id_product: int, quantity: int= 0):
     async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
@@ -61,7 +61,7 @@ async def put_basket_in_products_db(id_user: int, id_product: int, quantity: int
 
             print(f'Товар {id_product} добавлен в корзину')
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def delete_basket_in_products_db(id_user: int, id_product: int, quantity: int):
     async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
@@ -82,11 +82,9 @@ async def delete_basket_in_products_db(id_user: int, id_product: int, quantity: 
             print(f'Товар {id_product} добавлен в корзину')
 
 
-
-
 # Администратор
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def admin_add_products_db(data):
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
@@ -96,7 +94,7 @@ async def admin_add_products_db(data):
     print('Данные добавлены')
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def admin_get_list_products_db():
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetch("""
@@ -121,7 +119,7 @@ async def admin_del_products_db(id_product: int):
 
 # Запросы платежей
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def insert_info_payment(id_users: int, id_payment: str, status: str, url: str):
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
@@ -132,7 +130,7 @@ async def insert_info_payment(id_users: int, id_payment: str, status: str, url: 
 
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def update_status(id_user, id_payments, status):
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
@@ -143,3 +141,51 @@ async def update_status(id_user, id_payments, status):
                              id_user, id_payments, status)
 
 
+@ExceptionsCheck.check_exception
+async def create_order(id_user, data_basket, data_users):
+    """
+
+    :param id_user:
+    :param data_basket:
+    :param data_users:
+    :return:
+    """
+    async  with Data.conf.pool.acquire() as cursor:
+        await  cursor.execute("""
+                            INSERT INTO orders (id_users, order_data, order_status, name, contact, address)
+                                VALUES ($1, $2, $3, $4, $5, $6 )
+                            """,
+                              id_user, data_basket, 'Оплачивается',
+                              f"{data_users['last_name']} {data_users['first_name']}",
+                              data_users['contact_data'], data_users['address'])
+
+@ExceptionsCheck.check_exception
+async def update_order(id_user: int, status: str ):
+    """
+    Существуют такие запросы ('Собирается', 'В пути', 'Доставлен')
+
+    Если повысить статус до 'Доставлен', опустить его не получится
+    :param id_user:
+    :param status:
+    :return:
+    """
+    async with Data.conf.pool.acquire() as cursor:
+        await cursor.execute("""
+                            UPDATE orders SET order_status = $2
+                                WHERE id_users = $1 AND order_status != 'Доставлен'
+                            """,
+                             id_user, status)
+
+@ExceptionsCheck.check_exception
+async def delete_basket_user(id_users: int):
+    """
+
+    :param id_users:
+    :return:
+    """
+    async with Data.conf.pool.acquire() as cursor:
+        await cursor.execute("""
+                            DELETE FROM baskets
+                                WHERE id_users = $1
+                            """,
+                            id_users)

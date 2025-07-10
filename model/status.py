@@ -1,11 +1,11 @@
-from Exception import Exception_c
+from utils.exceptions_dlia_my import ExceptionsCheck
 
 import Data.conf
 
 
 class CheckStatus:
     @staticmethod
-    @Exception_c.check_exception
+    @ExceptionsCheck.check_exception
     async def check_user(id) -> bool:
         async with Data.conf.pool.acquire() as cursor:
             answer = await cursor.fetch("""

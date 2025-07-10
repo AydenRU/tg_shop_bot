@@ -1,7 +1,4 @@
-from Exception import Exception_c
-
 import Data.conf
-from model.change import admin_add_products_db
 
 
 async def admin_add_products_edit_db(id_product: int, quantity: int):

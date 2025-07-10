@@ -9,6 +9,8 @@ from Data.fsm_group import  DelProduct
 from model.change import  admin_get_list_products_db, admin_del_products_db
 from model.select import get_id_product
 
+from Data.button import inline_admin_product_button
+
 router_del_product_admin = Router()
 
 
@@ -28,13 +30,16 @@ async def admin_list_del_product(callback: CallbackQuery, state: FSMContext):
 
     text_data = "\n".join(lines)
     text_data += '\n\nВведите имя продукта, которое хотите удалить!!'
-    await callback.message.edit_text(text=text_data, reply_markup=inline_admin_back_admin)
+    await callback.message.edit_text(text=text_data, reply_markup=inline_admin_product_button)
     await state.set_state(DelProduct.name)
 
 
 @router_del_product_admin.message(DelProduct.name)
 async def admin_del_product(message: Message, state: FSMContext):
     name = message.text
-    id = int(await get_id_product(name))
-    await admin_del_products_db(id)
-    await message.edit_text(text="Удаление произведено ", reply_markup=inline_admin_back_admin)
+    id_product = await get_id_product(name)
+    id_product = id_product['id']
+
+    await admin_del_products_db(id_product)
+    await message.delete()
+    await message.answer(text="Удаление произведено ", reply_markup=inline_admin_product_button)

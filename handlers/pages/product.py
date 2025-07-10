@@ -8,6 +8,8 @@ from Data.button import *
 from model.select import get_info_about_product_db
 from model.change import products_in_baskets_db
 
+from utils.exceptions_dlia_my import ExceptionsCheck
+
 
 router_product = Router()
 
@@ -43,6 +45,7 @@ async def handler_info_product_shop(callback: CallbackQuery):
 
 
 @router_product.callback_query(F.data.startswith('Add_bascet_'))
+@ExceptionsCheck.check_payment_status_pending
 async def add_product_in_basket(callback: CallbackQuery):
     id_product = int(callback.data[callback.data.rfind('_') + 1:])
     await products_in_baskets_db(callback.from_user.id, id_product)

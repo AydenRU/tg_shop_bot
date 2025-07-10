@@ -13,10 +13,12 @@ from Data.button import *
 router_admin = Router()
 
 @router_admin.callback_query(F.data == 'Admin')
-async def admin_interface(callback: CallbackQuery):
+async def admin_interface(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
     await callback.message.delete()
-    await callback.message.answer_photo(photo=FSInputFile("Data\\image\\admin.jpg"),text=f'Приветствую администратор {callback.from_user.username}',
-                                     reply_markup=inline_admin_menu_button)
+    await callback.message.answer_photo(photo=FSInputFile("Data\\image\\admin.jpg"),
+                                        text=f'Приветствую администратор {callback.from_user.username}',
+                                        reply_markup=inline_admin_menu_button)
 
 
 @router_admin.callback_query(F.data == 'Admin_edit_list_product')
@@ -38,8 +40,4 @@ async def admin_list_all_product(callback: CallbackQuery, state: FSMContext):
     await callback.message.delete()
     await callback.message.answer(text=text_data, reply_markup=inline_admin_back_menu_edit_admin)
 
-
-@router_admin.callback_query(F.data.startswith('Admin_edit_product'))
-async def admin_show_product_for_edit(callback: CallbackQuery):
-    pass
 

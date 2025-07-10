@@ -1,10 +1,10 @@
-from Exception import Exception_c
+from utils.exceptions_dlia_my import ExceptionsCheck
 
 import Data.conf
 
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_id_product(name: str):
 
     async with Data.conf.pool.acquire() as cursor:
@@ -16,7 +16,7 @@ async def get_id_product(name: str):
         return answer
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_quantity_product_db(id_product: int):
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetchrow("""
@@ -24,11 +24,17 @@ async def get_quantity_product_db(id_product: int):
                                             WHERE products.id = $1
                                         """,
                                        id_product)
+        print(type(answer))
         return answer
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_total_cost(id_users):
+    """
+
+    :param id_users:
+    :return: <class 'decimal.Decimal'>
+    """
     async with Data.conf.pool.acquire() as cursor:
         total = await cursor.fetchval("""
                                       SELECT SUM(baskets.quantity * products.cost) FROM baskets
@@ -36,14 +42,13 @@ async def get_total_cost(id_users):
                                         WHERE baskets.id_users = $1
                                       """,
                                       id_users)
-
+        print(type(total))
     return total
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_quantity_basket(id_product: int, id_user: int):
     """
-
     :param id_product:
     :param id_user:
     :return:
@@ -58,10 +63,11 @@ async def get_quantity_basket(id_product: int, id_user: int):
 
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_basket_db(id_user: int):
     """
     Получаем корзину пользователя по id
+    products.id, products.nameproduct, baskets.quantity, products.cost
     :id: уникальный номер пользователя
     """
     async with Data.conf.pool.acquire() as cursor:
@@ -77,7 +83,7 @@ async def get_basket_db(id_user: int):
 
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_list_products_db():
     """
     Возвращает все продукты, которые есть в наличии
@@ -92,11 +98,11 @@ async def get_list_products_db():
         return answer
 
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_info_about_product_db(id_product: int):
     """
-
-    :param id:
+    введя id товара получишь данные о нем
+    :param id_product:
     :return:
     """
     async with Data.conf.pool.acquire() as cursor:
@@ -109,7 +115,7 @@ async def get_info_about_product_db(id_product: int):
 
 # Запросы платежей
 
-@Exception_c.check_exception
+@ExceptionsCheck.check_exception
 async def get_status_payment(id_users: int) :
     """
     Возвращает status_payments, id_payments*
@@ -125,8 +131,8 @@ async def get_status_payment(id_users: int) :
     return answer
 
 
-@Exception_c.check_exception
-async def get_status_pending_payment(id_users: int):
+@ExceptionsCheck.check_exception
+async def get_status_pending_payment(id_users: int) -> list[dict]:
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetch("""
                                         SELECT status_payments, id_payments, url_pay FROM history
@@ -137,3 +143,38 @@ async def get_status_pending_payment(id_users: int):
 
     return answer
 
+#Запросы о заказе
+
+@ExceptionsCheck.check_exception
+async def get_data_order_user(id_user):
+    async with Data.conf.pool.acquire() as cursor:
+        answer = await cursor.fetchrow("""
+                            SELECT * FROM orders
+                                WHERE id_users = $1 
+                            """,
+                            id_user)
+
+
+    return answer
+
+@ExceptionsCheck.check_exception
+async def get_data_order_users():
+    async with Data.conf.pool.acquire() as cursor:
+        answer = await cursor.fetch("""
+                            SELECT * FROM orders
+                                WHERE order_status != $1
+                            """,
+                            'Доставлен')
+    print(answer)
+    return answer
+
+@ExceptionsCheck.check_exception
+async def get_is_order(id_user):
+
+    async with Data.conf.pool.acquire() as cursor:
+        answer = await cursor.fetchrow("""
+                                        SELECT id FROM orders
+                                            WHERE id_users = $1 AND order_status != $2
+                                        """,
+                                       id_user, 'Доставлен')
+    return False if answer else True

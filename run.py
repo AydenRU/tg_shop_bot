@@ -19,7 +19,11 @@ from handlers.admin.edit.delete import router_del_product
 from handlers.admin.edit.cost import router_cost_product
 from handlers.admin.edit.add import router_add_product
 
+from handlers.admin.order_status.edit_order import edit_order_router
+from handlers.admin.order_status.main_list_order import main_list_order_router
+
 from pay.pay import router_pay
+from pay.user_data import user_data_router
 
 import Data.conf
 
@@ -46,13 +50,17 @@ async def main():
     disp.include_router(router_cost_product)
     disp.include_router(router_description_product)
     disp.include_router(router_pay)
+    disp.include_router(main_list_order_router)
+    disp.include_router(edit_order_router)
+    disp.include_router(user_data_router)
+
     try:
         await disp.start_polling(bot)
     except KeyboardInterrupt as error:
         print('Покааааа')
-    finally:
-        for i in [984778593]:
-            await bot.send_message(chat_id=i, text='Я ухожу спать :=(')
+    # finally:
+        # for i in [984778593]:
+            # await bot.send_message(chat_id=i, text='Я ухожу спать :=(')
 
 if __name__ == '__main__':
     asyncio.run(main())
