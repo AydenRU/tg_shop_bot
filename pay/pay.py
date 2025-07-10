@@ -17,8 +17,20 @@ from dotenv import load_dotenv
 
 from pay.user_data import input_first_name
 
-from model.select import get_total_cost, get_status_pending_payment, get_basket_db, get_is_order
-from model.change import insert_info_payment, update_status, create_order, update_order, delete_basket_user
+from model.select import (
+    get_total_cost,
+    get_status_pending_payment,
+    get_basket_db,
+    get_is_order,
+    get_status_payment
+)
+from model.change import (
+    insert_info_payment,
+    update_status,
+    create_order,
+    update_order,
+    delete_basket_user
+)
 
 from Data.button import PaymentButton
 
@@ -182,11 +194,33 @@ async def create_task_payment(callback: CallbackQuery, state: FSMContext):
     await state.clear()
 
 
+# @router_pay.callback_query(F.data == 'pay_cancel')
+# async def payment_cancel(callback: CallbackQuery):
+#     await callback.message.edit_text(text='Данный метод не работает так как не поддерживается тестовым магазином',
+#                                      reply_markup=await PaymentButton.inline_back_button())
+    # id_users = callback.from_user.id
+    # id_payment = await get_status_payment(id_users)
+    # idempotence_key = str(uuid.uuid4())
+    # print(id_payment['id_payments'])
+    # id_payment = await get_status_payment(id_users)
+    #
+    # payment = Payment.find_one(id_payment['id_payments'])
+
+    # if payment.status == "pending":
+    #     cancelled_payment = payment.cancel(idempotency_key=str(uuid.uuid4()))
+    #     print(cancelled_payment.status)
+    #     await callback.message.edit_text(text='Оплата отменена',
+    #                                      reply_markup=await PaymentButton.inline_back_button())
+    # else:
+    #     await callback.message.edit_text(text='Не получилось',
+    #                                      reply_markup=await PaymentButton.inline_back_button())
+
+
 @router_pay.callback_query(F.data == 'check_basket_users')
 async def check_basket_not_empty_users(callback: CallbackQuery, state: FSMContext):
     id_user = callback.from_user.id
     amount = await get_total_cost(id_user)
-    
+
     if amount  :
         await input_first_name(callback, state)
 
@@ -200,7 +234,7 @@ async def start_pay(callback: CallbackQuery):
     switching_to_payment = InlineKeyboardBuilder()
     switching_to_payment.add(InlineKeyboardButton(text='Оплатить', callback_data='check_basket_users'))
     switching_to_payment.add(InlineKeyboardButton(text='Проверить заказ', callback_data='pay_check'))
-    # switching_to_payment.add(InlineKeyboardButton(text='Отменить заказ', callback_data='pay_cancel'))
+    # switching_to_payment.add(InlineKeyboardButton(text='Отменить заказ()', callback_data='pay_cancel'))
     switching_to_payment.add(InlineKeyboardButton(text='Назад', callback_data='Basket'))
 
     await callback.message.delete()

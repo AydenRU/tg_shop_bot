@@ -125,9 +125,10 @@ async def get_status_payment(id_users: int) :
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetchrow("""
                                         SELECT status_payments, id_payments, url_pay FROM history
-                                        WHERE history.id_users = $1
+                                        WHERE history.id_users = $1 and history.status_payments = $2
                                         """,
-                                       id_users)
+                                       id_users, 'pending')
+        print(answer)
     return answer
 
 
@@ -150,7 +151,7 @@ async def get_data_order_user(id_user):
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetchrow("""
                             SELECT * FROM orders
-                                WHERE id_users = $1 
+                                WHERE id_users = $1 AND order_status != 'Доставлен'
                             """,
                             id_user)
 
