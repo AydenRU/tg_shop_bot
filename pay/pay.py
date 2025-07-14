@@ -22,7 +22,8 @@ from model.select import (
     get_status_pending_payment,
     get_basket_db,
     get_is_order,
-    get_status_payment
+    get_status_payment,
+    get_order_status
 )
 from model.change import (
     insert_info_payment,
@@ -159,10 +160,24 @@ class InteractionsPayment:
 @router_pay.callback_query(F.data == 'pay_check')
 async def pay_check(callback: CallbackQuery):
     payment = await StatusPayment.check_status(callback.from_user.id)
+
+
     if not payment:
-        await update_order(callback.from_user.id, 'Собирается')
-        await callback.message.edit_text(text='У вас нет действующих покупок',
+        order = await get_order_status(callback.from_user.id)
+        print(order)
+        if order == 'Оплачивается':
+            await update_order(callback.from_user.id, 'Собирается')
+            await callback.message.edit_text(text=f'Ваш заказ находится на этапе - Собирается',
+                                             reply_markup=await PaymentButton.inline_back_button())
+
+        elif order :
+            await callback.message.edit_text(text=f'Ваш заказ находится на этапе - {order['order_status']}',
+                                             reply_markup=await PaymentButton.inline_back_button())
+
+        else:
+            await callback.message.edit_text(text='У вас нет действующих покупок',
                                          reply_markup=await PaymentButton.inline_back_button())
+
     else:
         await callback.message.edit_text(text=f"Заказ не оплачен, для оплаты перейдите по ссылке: "
                                            f"{payment[0]['url_pay']}", reply_markup=await PaymentButton.inline_back_button())
@@ -225,7 +240,7 @@ async def check_basket_not_empty_users(callback: CallbackQuery, state: FSMContex
         await input_first_name(callback, state)
 
     else:
-        await callback.message.edit_text(text=f'Ваша корзина пуска. Положите в нее товар.',
+        await callback.message.edit_text(text=f'Ваша корзина пуста. Положите в нее товар.',
                                       reply_markup=await PaymentButton.inline_back_button())
 
 

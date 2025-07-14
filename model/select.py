@@ -158,6 +158,23 @@ async def get_data_order_user(id_user):
 
     return answer
 
+
+@ExceptionsCheck.check_exception
+async def get_order_status(id_user) -> dict:
+    """
+    :param id_user:
+    :return: dict[str[order_status]]
+    """
+    async with Data.conf.pool.acquire() as cursor:
+        answer = await cursor.fetchrow("""
+                                    SELECT order_status FROM orders
+                                        WHERE id_users = $1
+                                        AND order_status != $2
+                                    """,
+                                    id_user, 'Доставлен')
+    return answer
+
+
 @ExceptionsCheck.check_exception
 async def get_data_order_users():
     async with Data.conf.pool.acquire() as cursor:
@@ -170,8 +187,11 @@ async def get_data_order_users():
     return answer
 
 @ExceptionsCheck.check_exception
-async def get_is_order(id_user):
-
+async def get_is_order(id_user) -> bool:
+    """
+    :param id_user:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetchrow("""
                                         SELECT id FROM orders
