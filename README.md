@@ -41,7 +41,7 @@ Python 3.13 — основной язык проекта
 
 Aiogram — асинхронная библиотека для Telegram-ботов
 
-asyncpg — асинхронный драйвер для PostgreSQL
+asyncpg — асинхронная библиотека для PostgreSQL
 
 PostgreSQL — база данных
 
