@@ -31,10 +31,6 @@ dotenv
 
     PASSWORD=postgres
 
-Убедитесь, что Docker запущен. Соберите образ:
-
-    docker build -t ваше_имя .
-
 Запустите контейнер:
 
     docker run --env-file .env -p 8000:8000 имя_imeg
