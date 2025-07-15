@@ -5,7 +5,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, FSInputFile
 
-
+from model.change import Edit_users
 from model.status import CheckStatus
 
 from Data.button import *
@@ -19,20 +19,23 @@ async def start(message: Message):
     """
     Обработчик первого входа пользователя в главное меню
     """
+
     check = await CheckStatus.check_user(message.from_user.id)
-
-    # photo = FSInputFile()
-
-    if check:
-        keybord = inline_admin_main_button
-    else:
+    if not check:
+        await Edit_users.new_user(message.from_user.id)
         keybord = inline_main_button
 
-    await CheckStatus.check_user(message.from_user.id)
+    else:
+        if check:
+            keybord = inline_admin_main_button
+        else:
+            keybord = inline_main_button
+
     await message.answer_photo(
         photo =FSInputFile('Data\\image\\main_page.jpg'),
         caption= f'{message.from_user.first_name}. Добро пожаловать в магазин <3',
                         reply_markup=keybord )
+
 
 @router_main.callback_query(F.data == 'start')
 async def back_to_start(callback: CallbackQuery, state: FSMContext):

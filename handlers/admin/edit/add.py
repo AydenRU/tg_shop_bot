@@ -20,7 +20,8 @@ async def finish_add_quantity(id_product: int, quantity: int):
 
 @router_add_product.callback_query(F.data == 'add_product_admin')
 async def start_add(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(text='Сколько добавить?\nВведите: ', reply_markup=inline_admin_back_edit_product)
+    await callback.message.delete()
+    await callback.message.answer(text='Сколько добавить?\nВведите: ', reply_markup=inline_admin_back_edit_product)
     await state.set_state(EditAddQuantity.quantity)
 
 

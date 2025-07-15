@@ -16,12 +16,11 @@ from model.select import  get_data_order_users
 main_list_order_router =  Router()
 
 async def generator_text_order(data_orders: list[dict]) -> str:
-    text = f'{"id":<5}|{"id_users":<10}|{"order_status":<15}|{"start_time":<10}|{"end_time":<10}\n'
+    text = f'{"id":<5}|{"id_users":<25}|{"order_status":<25}\n'
     text += ('=' * len(text)) + '\n'
 
     for order in data_orders:
-        text += (f'{order["id"]:<5}|{order["id_users"]:<30}|{order["order_status"]:<30}|'
-                 f'{order["start_time"]:<20}|{order["end_time"] if order["end_time"] else 'Заказ не закончился'}\n')
+        text += (f'{order["id"]:<5}|{order["id_users"]:<25}|{order["order_status"]:<25}\n')
         await asyncio.sleep(0)
 
     return text

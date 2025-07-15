@@ -58,11 +58,12 @@ async def main_select_orders(target: Message | CallbackQuery, state: FSMContext)
     else:
         data_about_user = await get_data_order_user(target.from_user.id)
         if data_about_user :
-            print(data_about_user)# Запрашиваются данные об заказе пользователя
+            print(data_about_user)
             order_data = json_in_list(data_about_user['order_data'])
             text = await generator_info_order(data_about_user, order_data)
             await state.update_data(id_user=data_about_user['id_users'], status=data_about_user['order_status'])
             await target.message.answer(text=text, reply_markup=await Orders.inline_main_select_orders())
+
         else:
             await target.message.answer(text='Заказ исполнен', reply_markup=await Orders.inline_main_select_orders())
 
@@ -82,7 +83,6 @@ async def up_grayed_order(callback: CallbackQuery, state: FSMContext):
     :return:
     """
     start_data= await state.get_data()
-    print(start_data)
 
     try:
         if start_data['status'] == 'Доставлен':

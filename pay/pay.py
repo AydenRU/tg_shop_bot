@@ -64,6 +64,7 @@ class StatusPayment:
                 await update_status(id_user, payment['id_payments'], check.status)
             elif check.status == 'succeeded':
                 await update_status(id_user, payment['id_payments'], check.status)
+
             else:
                 pending.append(payment)
 
@@ -172,11 +173,11 @@ async def pay_check(callback: CallbackQuery):
     """
     payment = await StatusPayment.check_status(callback.from_user.id)
 
-
+    print(payment)
     if not payment:
         order = await get_order_status(callback.from_user.id)
         print(order)
-        if order == 'Оплачивается':
+        if order['order_status'] == 'Оплачивается':
             await update_order(callback.from_user.id, 'Собирается')
             await callback.message.edit_text(text=f'Ваш заказ находится на этапе - Собирается',
                                              reply_markup=await PaymentButton.inline_back_button())

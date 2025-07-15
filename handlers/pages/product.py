@@ -23,6 +23,7 @@ async def info_product_shop(callback, id_product):
                                             f'Цена:   {data['cost']}\n'
                                             f'Описание:   {data['description']}',
                                        reply_markup=await inline_item_product_button(id_product))
+
     else:
         await callback.message.delete()
         await callback.message.answer_photo(photo=data['image'],
