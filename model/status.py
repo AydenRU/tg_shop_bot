@@ -4,6 +4,9 @@ import Data.conf
 
 
 class CheckStatus:
+    """
+    Получение прав пользователя в приложении
+    """
     @staticmethod
     @ExceptionsCheck.check_exception
     async def check_user(id) -> bool:

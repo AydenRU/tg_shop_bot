@@ -80,6 +80,12 @@ class CreatePayment:
 
     @staticmethod
     async def create(amount: float, id_users: int):
+        """
+        Создание платежа
+        :param amount:
+        :param id_users:
+        :return:
+        """
         return Payment.create({
                 "amount": {
                     "value": amount,
@@ -159,6 +165,11 @@ class InteractionsPayment:
 
 @router_pay.callback_query(F.data == 'pay_check')
 async def pay_check(callback: CallbackQuery):
+    """
+    Проверка состояния заказа
+    :param callback:
+    :return:
+    """
     payment = await StatusPayment.check_status(callback.from_user.id)
 
 
@@ -186,7 +197,7 @@ async def pay_check(callback: CallbackQuery):
 @router_pay.callback_query(F.data == 'create_task_payment')
 async def create_task_payment(callback: CallbackQuery, state: FSMContext):
     """
-    Тут будет проверка на
+    Старк платежа и вывод данных
     :param state:
     :param callback:
     :return:
@@ -233,6 +244,12 @@ async def create_task_payment(callback: CallbackQuery, state: FSMContext):
 
 @router_pay.callback_query(F.data == 'check_basket_users')
 async def check_basket_not_empty_users(callback: CallbackQuery, state: FSMContext):
+    """
+    перед началом оплаты проверка на наличие товара к оплате
+    :param callback:
+    :param state:
+    :return:
+    """
     id_user = callback.from_user.id
     amount = await get_total_cost(id_user)
 

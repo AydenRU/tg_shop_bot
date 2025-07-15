@@ -40,6 +40,12 @@ async def check_data(data: dict, message: Message, state: FSMContext):
 
 
 async def input_first_name(callback: CallbackQuery, state: FSMContext):
+    """
+    Ввод имени
+    :param callback:
+    :param state:
+    :return:
+    """
     await callback.message.answer(text='Для отплаты товара заполните следующие данные')
     await callback.message.answer(text='Введите ваше имя :',
                                   reply_markup=await PaymentButton.inline_back_button())
@@ -48,6 +54,12 @@ async def input_first_name(callback: CallbackQuery, state: FSMContext):
 
 @user_data_router.message(InputDataUsers.first_name)
 async def input_last_name(message: Message, state: FSMContext):
+    """
+    Ввод фамилии
+    :param message:
+    :param state:
+    :return:
+    """
     if check_symbol(message.text):
         await message.answer(text='Недопустимые символы\n'
                                   'Введите заново',
@@ -62,6 +74,12 @@ async def input_last_name(message: Message, state: FSMContext):
 
 @user_data_router.message(InputDataUsers.last_name)
 async def input_address(message: Message, state: FSMContext):
+    """
+    Ввод адреса доставки
+    :param message:
+    :param state:
+    :return:
+    """
     if check_symbol(message.text):
         await message.answer(text='Недопустимые символы\n'
                                   'Введите заново',
@@ -76,7 +94,12 @@ async def input_address(message: Message, state: FSMContext):
 
 @user_data_router.message(InputDataUsers.address)
 async def input_contact_data(message: Message, state: FSMContext):
-
+    """
+    Ввод контактных данных
+    :param message:
+    :param state:
+    :return:
+    """
     await state.update_data(address=message.text )
     await message.answer(text='Введите контактные данные (телефон/ссылка TG):',
                          reply_markup=GetData.reply_take_phone())
@@ -86,6 +109,7 @@ async def input_contact_data(message: Message, state: FSMContext):
 
 @user_data_router.message(InputDataUsers.contact_data, F.contact | F.text)
 async def to_go_create_payment(message: Message, state: FSMContext):
+    """Вывод введенных данных для пользователя """
     if message.contact:
         contact_info = message.contact.phone_number
 

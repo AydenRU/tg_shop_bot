@@ -10,6 +10,11 @@ class ExceptionsCheck:
 
     @staticmethod
     def check_exception(func):
+        """
+        Отлавливает все проблемы в sql запросах
+        :param func:
+        :return:
+        """
         @wraps(func)
         async def wrapper(*args, **kwargs):
             try:
@@ -23,6 +28,11 @@ class ExceptionsCheck:
 
     @staticmethod
     def check_payment_status_pending(func):
+        """
+        Проверка на наличие платежа
+        :param func:
+        :return:
+        """
         from pay.pay import StatusPayment
         @wraps(func)
         async def wrapper(callback: CallbackQuery, *args, **kwargs):

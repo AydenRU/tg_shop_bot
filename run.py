@@ -35,6 +35,10 @@ disp = aiogram.Dispatcher()
 
 
 async def main():
+    """
+    Запуск БД, соединение с роутерами и пуллинг тг
+    :return:
+    """
     await connection_bd()
     await test_connection_bd(Data.conf.pool)
 

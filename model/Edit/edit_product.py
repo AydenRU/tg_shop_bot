@@ -2,6 +2,12 @@ import Data.conf
 
 
 async def admin_add_products_edit_db(id_product: int, quantity: int):
+    """
+    Увеличение количества товара в магазине
+    :param id_product:
+    :param quantity:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                             UPDATE products SET quantity = quantity + $2
@@ -11,6 +17,12 @@ async def admin_add_products_edit_db(id_product: int, quantity: int):
 
 
 async def admin_del_products_edit_db(id_product: int, quantity: int):
+    """
+    Уменьшение товара в мазашине
+    :param id_product:
+    :param quantity:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                             UPDATE products SET quantity = quantity - $2
@@ -20,6 +32,12 @@ async def admin_del_products_edit_db(id_product: int, quantity: int):
 
 
 async def admin_cost_products_edit_db(id_product: int, cost: float):
+    """
+    Изменение стоимости товара
+    :param id_product:
+    :param cost:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                             UPDATE products SET cost = $2
@@ -27,7 +45,14 @@ async def admin_cost_products_edit_db(id_product: int, cost: float):
                             """,
                              id_product, cost)
 
+
 async def admin_description_products_edit_db(id_product: int, description: str):
+    """
+    Изменение описания продукта
+    :param id_product:
+    :param description:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                             UPDATE products SET description = $2

@@ -6,7 +6,11 @@ import Data.conf
 
 @ExceptionsCheck.check_exception
 async def get_id_product(name: str):
-
+    """
+    Получение id продукта
+    :param name:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetchrow("""
                                         SELECT id FROM products
@@ -18,22 +22,27 @@ async def get_id_product(name: str):
 
 @ExceptionsCheck.check_exception
 async def get_quantity_product_db(id_product: int):
+    """
+    Получение количество товара
+    :param id_product:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetchrow("""
                                         SELECT quantity FROM products
                                             WHERE products.id = $1
                                         """,
                                        id_product)
-        print(type(answer))
+        # print(type(answer))
         return answer
 
 
 @ExceptionsCheck.check_exception
 async def get_total_cost(id_users):
     """
-
+    Получение суммы корзины
     :param id_users:
-    :return: <class 'decimal.Decimal'>
+    :return:
     """
     async with Data.conf.pool.acquire() as cursor:
         total = await cursor.fetchval("""
@@ -42,13 +51,14 @@ async def get_total_cost(id_users):
                                         WHERE baskets.id_users = $1
                                       """,
                                       id_users)
-        print(type(total))
+        # print(type(total))
     return total
 
 
 @ExceptionsCheck.check_exception
 async def get_quantity_basket(id_product: int, id_user: int):
     """
+    получение количество товара в корзине пользователя
     :param id_product:
     :param id_user:
     :return:
@@ -134,6 +144,7 @@ async def get_status_payment(id_users: int) :
 
 @ExceptionsCheck.check_exception
 async def get_status_pending_payment(id_users: int) -> list[dict]:
+    """Получение статуса оплаты заказа пользователя"""
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetch("""
                                         SELECT status_payments, id_payments, url_pay FROM history
@@ -148,6 +159,7 @@ async def get_status_pending_payment(id_users: int) -> list[dict]:
 
 @ExceptionsCheck.check_exception
 async def get_data_order_user(id_user):
+    """Получение данных об заказе пользователя"""
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetchrow("""
                             SELECT * FROM orders
@@ -162,6 +174,7 @@ async def get_data_order_user(id_user):
 @ExceptionsCheck.check_exception
 async def get_order_status(id_user) -> dict:
     """
+    Получение статуса заказа пользователя
     :param id_user:
     :return: dict[str[order_status]]
     """
@@ -177,18 +190,23 @@ async def get_order_status(id_user) -> dict:
 
 @ExceptionsCheck.check_exception
 async def get_data_order_users():
+    """
+    Получение данных заказа при его полной доставке
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetch("""
                             SELECT * FROM orders
                                 WHERE order_status != $1
                             """,
                             'Доставлен')
-    print(answer)
+    # print(answer)
     return answer
 
 @ExceptionsCheck.check_exception
 async def get_is_order(id_user) -> bool:
     """
+    Проверка на наличие заказов
     :param id_user:
     :return:
     """

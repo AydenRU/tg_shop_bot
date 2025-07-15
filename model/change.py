@@ -22,6 +22,13 @@ class Edit_users:
 
 @ExceptionsCheck.check_exception
 async def products_in_baskets_db(id_user: int, id_product: int, quantity: int= 1):
+    """
+    Перенос товара из каталога товаров в корзину пользователя
+    :param id_user:
+    :param id_product:
+    :param quantity:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
             await cursor.execute("""UPDATE products
@@ -29,7 +36,6 @@ async def products_in_baskets_db(id_user: int, id_product: int, quantity: int= 1
                                 WHERE id = $1
                                 """,
                                  id_product, quantity)
-            print('Товар вычтен из каталога продуктов')
 
             await cursor.execute("""
                                 INSERT INTO baskets (id_users, id_product, quantity)
@@ -38,10 +44,17 @@ async def products_in_baskets_db(id_user: int, id_product: int, quantity: int= 1
                                     UPDATE SET quantity = baskets.quantity + $3
                                 """,
                                  id_user, id_product, quantity)
-            print(f'Товар {id_product} добавлен в корзину')
+
 
 @ExceptionsCheck.check_exception
 async def put_basket_in_products_db(id_user: int, id_product: int, quantity: int= 0):
+    """
+    Перенос товара их корзины в каталог товаров
+    :param id_user:
+    :param id_product:
+    :param quantity:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
             await cursor.execute("""
@@ -51,7 +64,6 @@ async def put_basket_in_products_db(id_user: int, id_product: int, quantity: int
                                 """,
                                  id_user, id_product, quantity)
 
-            print('Товар вычтен из корзины продуктов')
             await cursor.execute("""
                                 UPDATE products
                                 SET quantity = quantity + $2
@@ -59,10 +71,17 @@ async def put_basket_in_products_db(id_user: int, id_product: int, quantity: int
                                 """,
                                  id_product, quantity)
 
-            print(f'Товар {id_product} добавлен в корзину')
+
 
 @ExceptionsCheck.check_exception
 async def delete_basket_in_products_db(id_user: int, id_product: int, quantity: int):
+    """
+    Удаление товара из каталога товаров и корзин пользователей
+    :param id_user:
+    :param id_product:
+    :param quantity:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         async with cursor.transaction():
             await cursor.execute("""
@@ -86,16 +105,25 @@ async def delete_basket_in_products_db(id_user: int, id_product: int, quantity: 
 
 @ExceptionsCheck.check_exception
 async def admin_add_products_db(data):
+    """
+    Добавление товара в магазин
+    :param data:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                             INSERT INTO products (nameproduct, cost, quantity)
                             VALUES ($1, $2, $3)
                             """, data[0], data[1], int(data[2]))
-    print('Данные добавлены')
+    # print('Данные добавлены')
 
 
 @ExceptionsCheck.check_exception
 async def admin_get_list_products_db():
+    """
+    Получение списка товаров
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         answer = await cursor.fetch("""
                                     SELECT id, nameproduct, quantity, cost FROM products
@@ -105,6 +133,11 @@ async def admin_get_list_products_db():
 
 
 async def admin_del_products_db(id_product: int):
+    """
+    Удаление товара из каталога
+    :param id_product:
+    :return:
+    """
     try:
         async with Data.conf.pool.acquire() as cursor:
             await cursor.execute("""
@@ -113,7 +146,7 @@ async def admin_del_products_db(id_product: int):
                                 """, id_product)
         return True
     except Exception as error:
-        print(error)
+        # print(error)
         return False
 
 
@@ -121,6 +154,14 @@ async def admin_del_products_db(id_product: int):
 
 @ExceptionsCheck.check_exception
 async def insert_info_payment(id_users: int, id_payment: str, status: str, url: str):
+    """
+    Создание оплаты товара
+    :param id_users:
+    :param id_payment:
+    :param status:
+    :param url:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                              INSERT INTO history (id_users, id_payments, status_payments, url_pay)
@@ -132,6 +173,13 @@ async def insert_info_payment(id_users: int, id_payment: str, status: str, url: 
 
 @ExceptionsCheck.check_exception
 async def update_status(id_user, id_payments, status):
+    """
+    Обновление статуса платежа
+    :param id_user:
+    :param id_payments:
+    :param status:
+    :return:
+    """
     async with Data.conf.pool.acquire() as cursor:
         await cursor.execute("""
                             UPDATE history SET status_payments = $3
@@ -144,7 +192,7 @@ async def update_status(id_user, id_payments, status):
 @ExceptionsCheck.check_exception
 async def create_order(id_user, data_basket, data_users):
     """
-
+    Создание заказа для сборки и отправки
     :param id_user:
     :param data_basket:
     :param data_users:
@@ -179,7 +227,7 @@ async def update_order(id_user: int, status: str ):
 @ExceptionsCheck.check_exception
 async def delete_basket_user(id_users: int):
     """
-
+    Удаление товара их корзины пользователя
     :param id_users:
     :return:
     """
