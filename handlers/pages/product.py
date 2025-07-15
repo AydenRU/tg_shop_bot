@@ -18,7 +18,8 @@ async def info_product_shop(callback, id_product):
 
     data = await get_info_about_product_db(id_product)
     if data['image'] is None:
-        await callback.message.edit_text(text=f'_______________{data['nameproduct']}_______________\n'
+        await callback.message.delete()
+        await callback.message.answer(text=f'_______________{data['nameproduct']}_______________\n'
                                             f'Количество: {data['quantity']}\n'
                                             f'Цена:   {data['cost']}\n'
                                             f'Описание:   {data['description']}',
