@@ -29,6 +29,9 @@ class EditCost(StatesGroup):
 class EditDescription(StatesGroup):
     description = State()
 
+class EditPhoto(StatesGroup):
+    photo = State()
+
 class SelectUserOrder(StatesGroup):
     id_user = State()
 

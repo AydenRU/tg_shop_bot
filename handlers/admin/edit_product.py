@@ -20,20 +20,36 @@ async def select_edit_product_admin(id_product: int, state: FSMContext, target: 
     data_info = await get_info_about_product_db(id_product)
 
     await state.update_data(id_product=id_product)
-
     if isinstance(target, Message):
-        await target.answer(text=f'_______________{data_info['nameproduct']}_______________\n'
-                              f'Количество: {data_info['quantity']}\n'
-                              f'Цена:   {data_info['cost']}\n'
-                              f'Описание:   {data_info['description']}',
-                         reply_markup=inline_admin_edit_product_admin)
+        if data_info['image'] is None:
+            await target.answer(text=f'_______________{data_info['nameproduct']}_______________\n'
+                                  f'Количество: {data_info['quantity']}\n'
+                                  f'Цена:   {data_info['cost']}\n'
+                                  f'Описание:   {data_info['description']}',
+                             reply_markup=inline_admin_edit_product_admin)
+        else:
+            await target.delete()
+            await target.answer_photo(photo=data_info['image'], caption=f'_______________{data_info['nameproduct']}_______________\n'
+                                           f'Количество: {data_info['quantity']}\n'
+                                           f'Цена:   {data_info['cost']}\n'
+                                           f'Описание:   {data_info['description']}',
+                                      reply_markup=inline_admin_edit_product_admin)
 
     elif isinstance(target, CallbackQuery):
-        await target.message.edit_text(text=f'_______________{data_info['nameproduct']}_______________\n'
-                                 f'Количество: {data_info['quantity']}\n'
-                                 f'Цена:   {data_info['cost']}\n'
-                                 f'Описание:   {data_info['description']}',
-                            reply_markup=inline_admin_edit_product_admin)
+        if data_info['image'] is None:
+
+            await target.message.edit_text(text=f'_______________{data_info['nameproduct']}_______________\n'
+                                     f'Количество: {data_info['quantity']}\n'
+                                     f'Цена:   {data_info['cost']}\n'
+                                     f'Описание:   {data_info['description']}',
+                                reply_markup=inline_admin_edit_product_admin)
+        else:
+            await target.message.delete()
+            await target.message.answer_photo(photo=data_info['image'], caption=f'_______________{data_info['nameproduct']}_______________\n'
+                                           f'Количество: {data_info['quantity']}\n'
+                                           f'Цена:   {data_info['cost']}\n'
+                                           f'Описание:   {data_info['description']}',
+                                      reply_markup=inline_admin_edit_product_admin)
 
 
 

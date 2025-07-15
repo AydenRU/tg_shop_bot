@@ -18,6 +18,7 @@ from handlers.admin.edit.description import router_description_product
 from handlers.admin.edit.delete import router_del_product
 from handlers.admin.edit.cost import router_cost_product
 from handlers.admin.edit.add import router_add_product
+from handlers.admin.edit.photo import router_photo_product
 
 from handlers.admin.order_status.edit_order import edit_order_router
 from handlers.admin.order_status.main_list_order import main_list_order_router
@@ -57,6 +58,7 @@ async def main():
     disp.include_router(main_list_order_router)
     disp.include_router(edit_order_router)
     disp.include_router(user_data_router)
+    disp.include_router(router_photo_product)
 
     try:
         await disp.start_polling(bot)

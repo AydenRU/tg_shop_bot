@@ -62,6 +62,24 @@ async def admin_description_products_edit_db(id_product: int, description: str):
 
 
 
+async def admin_photo_products_edit_db(id_product: int, photo: str):
+    """
+    обновление фотографии
+    :param id_product:
+    :param photo:
+    :return:
+    """
+    async with Data.conf.pool.acquire() as cursor:
+        await cursor.execute("""
+                            UPDATE products SET image = $2
+                            WHERE products.id = $1
+                            """,
+                            id_product, photo)
+
+    # print('отправлено', id_product, photo)
+
+
+
 
 
 

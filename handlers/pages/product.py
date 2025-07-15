@@ -17,13 +17,20 @@ router_product = Router()
 async def info_product_shop(callback, id_product):
 
     data = await get_info_about_product_db(id_product)
-    # await callback.message.delete()
-    await callback.message.edit_text(text=f'_______________{data['nameproduct']}_______________\n'
-                                      f'Количество: {data['quantity']}\n'
-                                      f'Цена:   {data['cost']}\n'
-                                      f'Описание:   {data['description']}',
-                                     reply_markup=await inline_item_product_button(id_product)
-                                  )
+    if data['image'] is None:
+        await callback.message.edit_text(text=f'_______________{data['nameproduct']}_______________\n'
+                                            f'Количество: {data['quantity']}\n'
+                                            f'Цена:   {data['cost']}\n'
+                                            f'Описание:   {data['description']}',
+                                       reply_markup=await inline_item_product_button(id_product))
+    else:
+        await callback.message.delete()
+        await callback.message.answer_photo(photo=data['image'],
+                                          caption=f'_______________{data['nameproduct']}_______________\n'
+                                                  f'Количество: {data['quantity']}\n'
+                                                  f'Цена:   {data['cost']}\n'
+                                                  f'Описание:   {data['description']}',
+                                          reply_markup=await inline_item_product_button(id_product))
 
 @router_product.callback_query(F.data == 'Product')
 async def catalog_product(callback: CallbackQuery):
