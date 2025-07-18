@@ -9,6 +9,8 @@ from handlers.pages.main import router_main
 from handlers.pages.product import router_product
 from handlers.pages.basket import  router_basket
 
+from handlers.tech_support.send_message_in_support import router_send_message_in_support
+
 from handlers.admin.admin_handler import router_admin
 from handlers.admin.del_product import router_del_product_admin
 from handlers.admin.add_product import router_add_new_product_admin
@@ -47,6 +49,7 @@ async def main():
     disp.include_router(router_admin)
     disp.include_router(router_product)
     disp.include_router(router_basket)
+    disp.include_router(router_send_message_in_support)
     disp.include_router(router_del_product_admin)
     disp.include_router(router_add_new_product_admin)
     disp.include_router(router_edit_product_admin)

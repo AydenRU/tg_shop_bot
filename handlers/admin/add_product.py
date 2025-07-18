@@ -4,6 +4,8 @@ from aiogram import F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
+from utils.exceptions_dlia_my import CheckInputData
+
 from Data.fsm_group import AddProduct
 
 from model.change import admin_add_products_db
@@ -28,12 +30,12 @@ async def admin_add_product_two(message: Message, state: FSMContext):
                             reply_markup=inline_admin_add_product_button)
     await state.set_state(AddProduct.cost)
 
-
+@CheckInputData.check_quantity
 @router_add_new_product_admin.message(AddProduct.cost)
 async def admin_add_product_threa(message: Message, state: FSMContext):
     await state.update_data(cost=f'{message.text}')
     await message.answer(text='Осталось ввести количество товара',
-                         reply_markup=inline_admin_add_product_button)
+                         reply_markup=inline_admin_add_product_buttonб )
     await state.set_state(AddProduct.quantity)
 
 

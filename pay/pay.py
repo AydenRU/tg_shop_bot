@@ -4,6 +4,7 @@ import uuid
 from types import NoneType
 
 from aiogram.fsm.context import FSMContext
+
 from yookassa import Configuration, Payment
 
 from aiogram import Router, F

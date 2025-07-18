@@ -40,3 +40,8 @@ class InputDataUsers(StatesGroup):
     last_name = State()
     address = State()
     contact_data = State()
+
+class MessageInSupport(StatesGroup):
+    text = State()
+    contact_data = State()
+

@@ -1,9 +1,7 @@
 from functools import wraps
 
+
 from aiogram.types import CallbackQuery
-
-
-
 
 
 class ExceptionsCheck:
@@ -46,4 +44,26 @@ class ExceptionsCheck:
                 return None
             return await func(callback, *args, **kwargs)
 
+        return wrapper
+
+
+class CheckInputData:
+    """
+    Принимает сообщение пользователя и проверяет, что указано число
+    """
+
+    @staticmethod
+    def check_quantity(func):
+
+        @wraps(func)
+        async def wrapper(*args):
+            message = args[0]
+            if not message.text.isdigit():
+                await message.delete()
+                await message.answer(text='Неверно указаны данные')
+                return
+            else:
+                func(*args)
+
+            return
         return wrapper

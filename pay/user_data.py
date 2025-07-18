@@ -20,20 +20,6 @@ def check_symbol(name: str):
 
     return True if result else False
 
-async def check_contact(contact: str):
-    #Проверяем первый символ и на его основе понимаем, что за данные
-
-    check = {
-        '+': lambda x: x.isdigit(),
-        '@': lambda x: re.fullmatch(r'^[a-zA-Z0-9_]{5,32}$', x) is not None
-    }
-
-    for sign, func in check.items():
-        if contact[0] == sign:
-            return func(contact[1:])
-
-    return False
-
 
 async def check_data(data: dict, message: Message, state: FSMContext):
     pass

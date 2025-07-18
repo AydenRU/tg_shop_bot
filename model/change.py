@@ -237,3 +237,14 @@ async def delete_basket_user(id_users: int):
                                 WHERE id_users = $1
                             """,
                             id_users)
+
+class SupportBD:
+
+    @staticmethod
+    async def send_support(id_users: int, text: str, contact_data: str ) -> None:
+        async with Data.conf.pool.acquire() as cursor:
+            await cursor.execute("""
+                                INSERT INTO support(id_users, text, contact_data)
+                                    VALUES ($1, $2, $3)
+                                """,
+                                 id_users, text, contact_data)

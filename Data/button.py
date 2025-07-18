@@ -18,7 +18,9 @@ __all__ = ['inline_main_button', 'inline_basket_button',
 
 inline_main_button = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text='Корзина', callback_data='Basket')],
-                     [InlineKeyboardButton(text='Продукты', callback_data='Product')]])
+                     [InlineKeyboardButton(text='Продукты', callback_data='Product')],
+                     [InlineKeyboardButton(text='Тех. поддержка', callback_data='send_message_in_support')]
+                     ])
 
 
 inline_basket_button = InlineKeyboardMarkup(
@@ -56,6 +58,7 @@ async def inline_product_button():
 inline_admin_main_button = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text='Корзина', callback_data='Basket')],
                      [InlineKeyboardButton(text='Продукты', callback_data='Product')],
+                     [InlineKeyboardButton(text='Тех. поддержка', callback_data='send_message_in_support')],
                      [InlineKeyboardButton(text='Админ панель', callback_data='Admin')]]
     )
 
@@ -147,12 +150,24 @@ class Orders:
                                   callback_data='main_list_order')]
         ])
 
-class GetData:
 
+class GetData:
     @staticmethod
     def reply_take_phone():
         return ReplyKeyboardMarkup(keyboard=[
             [KeyboardButton(text='Предоставить номер телефона',
                             request_contact=True)]
+
+        ],
+        resize_keyboard=True,
+        one_time_keyboard=True)
+
+class SupportButton:
+
+    @staticmethod
+    async def inline_back_main_button():
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='Главное меню',
+                                  callback_data='start')]
         ])
 
